@@ -1263,8 +1263,10 @@ function geberateOpenVPNFile() {
 		TLS_SIG="3"
 	elif grep -qs "^tls-auth" /etc/openvpn/server.conf; then
 		TLS_SIG="2"
-	else grep -qs "^tls-crypt" /etc/openvpn/server.conf;
+	elif grep -qs "^tls-crypt" /etc/openvpn/server.conf; then
 		TLS_SIG="1"
+	else
+		TLS_SIG="0"
 	fi
 
 	# Generates the custom client.ovpn

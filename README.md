@@ -2,7 +2,7 @@
 
 - #### There is an original [README.MD](https://github.com/shuricksumy/openvpn-install/blob/my_main/README_ORIGINAL.md).
 - #### This project was cloned from https://github.com/angristan/openvpn-install (big thanks for this great job)
-- #### The Docker builder with UI part will be added as a separate project [here] soon ...
+- #### The Docker builder with UI part is here [**OPENVPN-SERVER-DOCKER**](https://github.com/shuricksumy/openvpn-server-docker)
 
 ## Updates:
 - Refactored internal structure to use this script for the docker builder

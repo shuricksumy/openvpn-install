@@ -1493,7 +1493,7 @@ function setExtraServerParameters() {
        echo "client-to-client" >> /etc/openvpn/server.conf
      fi
 
-     if [[ $f != "" ]]; then
+     if [[ $SET_MGMT != "" ]]; then
        echo "$SET_MGMT" >> /etc/openvpn/server.conf
      fi
 

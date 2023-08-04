@@ -1030,7 +1030,7 @@ verb 3" >>/etc/openvpn/server.conf
 		echo "proto udp" >>/etc/openvpn/client-template.txt
 		echo "explicit-exit-notify" >>/etc/openvpn/client-template.txt
 	elif [[ $PROTOCOL == 'tcp' ]]; then
-		echo "proto tcp-client" >>/etc/openvpn/client-template.txt
+		echo "proto tcp" >>/etc/openvpn/client-template.txt
 	fi
 	echo "remote $IP $PORT
 dev tun
@@ -1493,7 +1493,7 @@ function setExtraServerParameters() {
        echo "client-to-client" >> /etc/openvpn/server.conf
      fi
 
-     if [[ $SET_MGMT != "" ]]; then
+     if [[ $f != "" ]]; then
        echo "$SET_MGMT" >> /etc/openvpn/server.conf
      fi
 

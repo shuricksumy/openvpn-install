@@ -54,6 +54,6 @@
   ```
 - Added OVPN_PATH to set path to openvpn configs
   ```commandline
-   # default
-   OVPN_PATH="/etc/openvpn"
-   ```
+  #default
+  OVPN_PATH="/etc/openvpn"
+  ```

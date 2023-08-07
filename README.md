@@ -52,3 +52,8 @@
   echo "set_var EASYRSA_CERT_EXPIRE 3650" >>vars
   
   ```
+- Added OVPN_PATH to set path to openvpn configs
+  ```commandline
+   # default
+   OVPN_PATH="/etc/openvpn"
+   ```

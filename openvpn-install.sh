@@ -724,7 +724,7 @@ function installOpenVPN() {
 
 	# Install the latest version of easy-rsa from source, if not already installed.
 	if [[ ! -f ${OVPN_PATH}/easy-rsa/SERVER_NAME_GENERATED ]]; then
-		local version="3.1.6"
+		local version="3.1.7"
 		local easyrsa_file_name="EasyRSA-${version}.tgz"
 
 		if [[ ! -f ~/${easyrsa_file_name} ]]; then
@@ -1065,8 +1065,9 @@ verb 3" >>${OVPN_PATH}/client-template.txt
 	fi
 
 	# Generate the custom client.ovpn
-	newClient
-	echo "If you want to add more clients, you simply need to run this script another time!"
+	# skip default generation
+	#newClient
+	echo "If you want to add clients, you simply need to run this script another time!"
 }
 
 function setFWRules() {
@@ -1103,13 +1104,16 @@ function setFWRules() {
 
 	# Script to add rules
 	echo "#!/bin/bash
+if [[ -z \$NIC ]]; then
+	NIC=\$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
+fi
 
-if [[ ! \$(iptables -t nat -C POSTROUTING -s $IP_RANGE/24 -o $NIC -j MASQUERADE) ]]; then
-  iptables -t nat -I POSTROUTING 1 -s $IP_RANGE/24 -o $NIC -j MASQUERADE
+if [[ ! \$(iptables -t nat -C POSTROUTING -s $IP_RANGE/24 -o \$NIC -j MASQUERADE) ]]; then
+  iptables -t nat -I POSTROUTING 1 -s $IP_RANGE/24 -o \$NIC -j MASQUERADE
   iptables -I INPUT 1 -i tun$TUN_NUMBER -j ACCEPT
-  iptables -I FORWARD 1 -i $NIC -o tun$TUN_NUMBER -j ACCEPT
-  iptables -I FORWARD 1 -i tun$TUN_NUMBER -o $NIC -j ACCEPT
-  iptables -I INPUT 1 -i $NIC -p $PROTOCOL --dport $PORT -j ACCEPT
+  iptables -I FORWARD 1 -i \$NIC -o tun$TUN_NUMBER -j ACCEPT
+  iptables -I FORWARD 1 -i tun$TUN_NUMBER -o \$NIC -j ACCEPT
+  iptables -I INPUT 1 -i \$NIC -p $PROTOCOL --dport $PORT -j ACCEPT
 else
   echo \"Rules ip4 are already exist\"
 fi" >${SET_FW_FILE_PATH}
@@ -1128,13 +1132,16 @@ fi" >>${SET_FW_FILE_PATH}
 
 	# Script to remove rules
 	echo "#!/bin/bash
+if [[ -z \$NIC ]]; then
+	NIC=\$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
+fi
 
-if [[ \$(iptables -t nat -C POSTROUTING -s $IP_RANGE/24 -o $NIC -j MASQUERADE) ]]; then
-  iptables -t nat -D POSTROUTING -s $IP_RANGE/24 -o $NIC -j MASQUERADE
+if [[ \$(iptables -t nat -C POSTROUTING -s $IP_RANGE/24 -o \$NIC -j MASQUERADE) ]]; then
+  iptables -t nat -D POSTROUTING -s $IP_RANGE/24 -o \$NIC -j MASQUERADE
   iptables -D INPUT -i tun$TUN_NUMBER -j ACCEPT
-  iptables -D FORWARD -i $NIC -o tun$TUN_NUMBER -j ACCEPT
-  iptables -D FORWARD -i tun$TUN_NUMBER -o $NIC -j ACCEPT
-  iptables -D INPUT -i $NIC -p $PROTOCOL --dport $PORT -j ACCEPT
+  iptables -D FORWARD -i \$NIC -o tun$TUN_NUMBER -j ACCEPT
+  iptables -D FORWARD -i tun$TUN_NUMBER -o \$NIC -j ACCEPT
+  iptables -D INPUT -i \$NIC -p $PROTOCOL --dport $PORT -j ACCEPT
 else
   echo \"Rules ip4 are NOT exist to delete\"
 fi" >${RM_FW_FILE_PATH}
@@ -1228,12 +1235,12 @@ function newClient() {
 		echo "Client $CLIENT added."
 	fi
 
-	geberateOpenVPNFile
+	generateOpenVPNFile
 
 	exit 0
 }
 
-function geberateOpenVPNFile() {
+function generateOpenVPNFile() {
 
 	if [[ -z  $CLIENT ]]; then
 		exit 1
@@ -1647,7 +1654,7 @@ if [[ $DOCKER_COMMAND != "" ]]; then
 		exit 0
 		;;
 	4)
-		geberateOpenVPNFile
+		generateOpenVPNFile
 		exit 0
 		;;
 	5)
